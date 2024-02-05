@@ -1,6 +1,6 @@
-using PCSAFTSuperancillary
+using EoSSuperancillaries
 using Test
 
-@testset "PCSAFTSuperancillary.jl" begin
+@testset "EoSSuperancillaries.jl" begin
     # Write your tests here.
 end

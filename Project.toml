@@ -1,10 +1,10 @@
-name = "PCSAFTSuperancillary"
+name = "EoSSuperancillaries"
 uuid = "c1bf003f-4e47-49d9-bdfd-5a4051db3c04"
-authors = ["longemen3000 <longemen3000@gmail.com> and contributors"]
+authors = ["Hon Wa Yew <yewhonwa@gmail.com>", "Pierre Walker <pjwalker@caltech.edu>", "Andrés Riedemann <andres.riedemann@gmail.com>"]
 version = "1.0.0-DEV"
 
 [compat]
-julia = "1"
+julia = "1.6"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
