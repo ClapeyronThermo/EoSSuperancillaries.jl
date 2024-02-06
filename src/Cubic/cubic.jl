@@ -17,6 +17,17 @@ function _cubic_psat(T,a,b,CP)
     return p̃*a/(b*b)    
 end
 
+_vdw_p() = vdW_p
+_vdw_vl() = vdW_vl
+_vdw_vv() = vdW_vv
+
+_rk_p() = RK_p
+_rk_vl() = RK_vl
+_rk_vv() = RK_vv
+
+_pr_p() = PR_p
+_pr_vl() = PR_vl
+_pr_vv() = PR_vv
 """
     vl = vdw_vlsat(T,a,b)
 
@@ -31,7 +42,7 @@ Outputs:
 - `vl` : Saturation Liquid Volume `[m^3]`.  Returns `NaN` if the value is outside the range of the ancillary.
 """
 function vdw_vlsat(T,a,b)
-    return _cubic_vsat(T,a,b,vdW_vl)
+    return _cubic_vsat(T,a,b,_vdw_vl())
 end
 
 """
@@ -48,7 +59,7 @@ Outputs:
 - `vv` : Saturation Vapour Volume `[m^3]`. Returns `NaN` if the value is outside the range of the ancillary.
 """
 function vdw_vvsat(T,a,b)
-    return _cubic_vsat(T,a,b,vdW_vv)
+    return _cubic_vsat(T,a,b,_vdw_vv())
 end
 
 """
@@ -65,7 +76,7 @@ Outputs:
 - `p` : Saturation pressure `[Pa]`.  Returns `NaN` if the value is outside the range of the ancillary.
 """
 function vdw_psat(T,a,b)
-    return _cubic_psat(T,a,b,vdW_p)
+    return _cubic_psat(T,a,b,_vdw_p())
 end
 
 
@@ -83,7 +94,7 @@ Outputs:
 - `vl` : Saturation Liquid Volume `[m^3]`.  Returns `NaN` if the value is outside the range of the ancillary.
 """
 function rk_vlsat(T,a,b)
-    return _cubic_vsat(T,a,b,RK_vl)
+    return _cubic_vsat(T,a,b,_rk_vl())
 end
 
 """
@@ -100,7 +111,7 @@ Outputs:
 - `vv` : Saturation Vapour Volume `[m^3]`. Returns `NaN` if the value is outside the range of the ancillary.
 """
 function rk_vvsat(T,a,b)
-    return _cubic_vsat(T,a,b,RK_vv)
+    return _cubic_vsat(T,a,b,_rk_vv())
 end
 
 """
@@ -117,7 +128,7 @@ Outputs:
 - `p` : Saturation pressure `[Pa]`.  Returns `NaN` if the value is outside the range of the ancillary.
 """
 function rk_psat(T,a,b)
-    return _cubic_psat(T,a,b,RK_p)
+    return _cubic_psat(T,a,b,_rk_p())
 end
 
 """
@@ -134,7 +145,7 @@ Outputs:
 - `vl` : Saturation Liquid Volume `[m^3]`.  Returns `NaN` if the value is outside the range of the ancillary.
 """
 function pr_vlsat(T,a,b)
-    return _cubic_vsat(T,a,b,PR_vl)
+    return _cubic_vsat(T,a,b,_pr_vl())
 end
 
 """
@@ -151,7 +162,7 @@ Outputs:
 - `vv` : Saturation Vapour Volume `[m^3]`. Returns `NaN` if the value is outside the range of the ancillary.
 """
 function pr_vvsat(T,a,b)
-    return _cubic_vsat(T,a,b,PR_vv)
+    return _cubic_vsat(T,a,b,_pr_vv())
 end
 
 """
@@ -168,6 +179,6 @@ Outputs:
 - `p` : Saturation pressure `[Pa]`.  Returns `NaN` if the value is outside the range of the ancillary.
 """
 function pr_psat(T,a,b)
-    return _cubic_psat(T,a,b,PR_p)
+    return _cubic_psat(T,a,b,_pr_p())
 end
 

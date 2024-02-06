@@ -43,12 +43,11 @@ function chev_eval(Base.@specialize(cheb), Base.@specialize(x̃))
         nan = 0.0*zero(x̃)/zero(x̃)
         return nan
     end
-
     imax = searchsortedfirst(x̃range, x̃)
     imin = imax - 1
-    x̃minᵢ::Float64 = x̃range[imin]
-    x̃maxᵢ::Float64 = x̃range[imax]
-    Cₙi::Vector{Float64} = Cₙ[imin]
+    x̃minᵢ = x̃range[imin]
+    x̃maxᵢ = x̃range[imax]
+    Cₙi = Cₙ[imin]
     x̄ = (2*x̃ - (x̃maxᵢ + x̃minᵢ)) / (x̃maxᵢ - x̃minᵢ)
     return chev_eval(Cₙi,x̄)
 end
@@ -58,7 +57,7 @@ function chev_eval(cheb::AbstractVector{T},x::S) where {T,S}
     R = promote_type(T, S)
     l = length(cheb)
     l == 0 && return zero(R)
-    l == 1 && return R(ch[1])
+    l == 1 && return R(cheb[1])
     c0 = cheb[l - 1]
     c1 = cheb[l]
     for i in (l-2):-1:1
