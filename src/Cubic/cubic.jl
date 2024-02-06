@@ -1,19 +1,19 @@
 function _cubic_vsat(T,a,b,CV)
     T̃ = T*R̄*b/a
-    ρ = chev_eval(CV,T̃)
+    ρ = cheb_eval(CV,T̃)
     return b/ρ
 end
 
 function _cubic_vsat2(T,a,b,CV,VL)
     T̃ = T*R̄*b/a
-    ρl = chev_eval(CL,T̃)
-    ρv = chev_eval(CV,T̃)
+    ρl = cheb_eval(CL,T̃)
+    ρv = cheb_eval(CV,T̃)
     return b/ρl,b/ρv
 end
 
 function _cubic_psat(T,a,b,CP)
     T̃ = T*R̄*b/a
-    p̃ = chev_eval(CP,T̃)
+    p̃ = cheb_eval(CP,T̃)
     return p̃*a/(b*b)    
 end
 

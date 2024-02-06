@@ -33,7 +33,7 @@ Base.first(r::ChebyshevBiRange) = ChebyshevRange(r.range,r.coeffs1)
 Base.last(r::ChebyshevBiRange) = ChebyshevRange(r.range,r.coeffs2)
 
 #evaluation of ranges of chebyshev coefficients
-function chev_eval(Base.@specialize(cheb), Base.@specialize(x̃))
+function cheb_eval(Base.@specialize(cheb), Base.@specialize(x̃))
     Cₙ = cheb.coeffs
     x̃range = cheb.range
     x̃min = first(x̃range)
@@ -49,11 +49,11 @@ function chev_eval(Base.@specialize(cheb), Base.@specialize(x̃))
     x̃maxᵢ = x̃range[imax]
     Cₙi = Cₙ[imin]
     x̄ = (2*x̃ - (x̃maxᵢ + x̃minᵢ)) / (x̃maxᵢ - x̃minᵢ)
-    return chev_eval(Cₙi,x̄)
+    return cheb_eval(Cₙi,x̄)
 end
 
 
-function chev_eval(cheb::AbstractVector{T},x::S) where {T,S}
+function cheb_eval(cheb::AbstractVector{T},x::S) where {T,S}
     R = promote_type(T, S)
     l = length(cheb)
     l == 0 && return zero(R)
