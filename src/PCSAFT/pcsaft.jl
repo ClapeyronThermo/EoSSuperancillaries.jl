@@ -19,7 +19,7 @@ function DCT_mat(x::Val{N}) where N
             i,j = ii - 1, jj - 1
             p_i = (i == 0 || i == N) ? 2 : 1
             p_j = (j == 0 || j == N) ? 2 : 1
-            vij = 2.0 / (N*p_i*p_j) * cospi(jj*ii/N)
+            vij = (2.0 / (N*p_i*p_j)) * cospi(jj*ii/N)
             v[ii,jj] = vij
             v[jj,ii] = vij
         end
@@ -27,17 +27,23 @@ function DCT_mat(x::Val{N}) where N
     return v
 end
 
-const mat17 = DCT_mat(Val{17}())
 const V16 = DCT_mat(Val{16}())
 
 function pcsaft_vsat(T,m,ϵ,σ)
-    _0 = zero(T+m+ϵ+σ+1.0)
-    TYPE = typeof(_0)
     T̃ = T/ϵ
+    ρ̃l,ρ̃v = _pcsaft_rhosat(T̃,m)
+    N_Aσ3 = N_A*σ*σ*σ
+    vl = N_Aσ3/ρ̃l
+    vv = N_Aσ3/ρ̃v
+    return vl,vv
+end
+
+function _pcsaft_rhosat(T̃,m)
+    _0 = zero(T̃+m+1.0)
+    TYPE = typeof(_0)
     if !(1.0 <= m <= 64)
         nan = zero(TYPE)/zero(TYPE)
         return nan,nan
-        #return StaticArrays.sacollect(SVector{17, TYPE}, nan for i in 1:17)
     end
     m⁻¹ = 1/m
     T̃c = cheb_eval(PCSAFTsuperanc.Tc,m⁻¹)
@@ -54,25 +60,28 @@ function pcsaft_vsat(T,m,ϵ,σ)
     
     sat_data = WIntervals[w_idx]
     edges,liq,vap = sat_data
-    #TODO: find the allocations
-    static_edge = StaticArrays.sacollect(SVector{17, Float64},edges)
-    ρ̃l_points = StaticArrays.sacollect(SVector{17, typeof(Θ)}, cheb_eval(liq[i],Θ) for i in 1:17)
-    ρ̃v_points = StaticArrays.sacollect(SVector{17, typeof(Θ)}, cheb_eval(vap[i],Θ) for i in 1:17)
-    
+
+    ρ̃l_points = mvec(TYPE,Val{17}())
+    ρ̃v_points = mvec(TYPE,Val{17}())
+
+    for i in 1:17
+        ρ̃l_points[i] = cheb_eval(liq[i],Θ)
+        ρ̃v_points[i] = cheb_eval(vap[i],Θ)
+    end   
+
     cheb_nodes_ρ̃l = V16*ρ̃l_points
     cheb_nodes_ρ̃v = V16*ρ̃v_points
-    #w,_ = cheb_xrange(reverse(edges),m⁻¹) #TODO: implement reverse
+
     ρ̃l = cheb_eval(cheb_nodes_ρ̃l,m⁻¹)
     ρ̃v = cheb_eval(cheb_nodes_ρ̃v,m⁻¹)
+    
+    return ρ̃l,ρ̃v
+end
 
-    ρl = ρ̃l/(N_A*σ*σ*σ)
-    ρv = ρ̃v/(N_A*σ*σ*σ)
-    return 1/ρl,1/ρv
-    #static_edge = ntuple(i -> edges[i],Val{17}())
-    #ρ̃l_points = NTuple{17, TYPE}(cheb_eval(liq[i],Θ) for i in 1:17) #ntuple(i -> cheb_eval(liq[i],Θ),Val{17}())
-    #ρ̃v_points = NTuple{17, TYPE}(cheb_eval(vap[i],Θ) for i in 1:17)
-
-    #return ρ̃l_m
-    #ρ̃l_m = map(x -> cheb_eval(first(x),Θ), PCSAFT_vsat)
-    #ρ̃v_m = map(x -> cheb_eval(last(x),Θ), PCSAFT_vsat)
+function mvec(::Type{T},::Val{N}) where {T,N}
+    if isbitstype(T) # MVector does not work on non bits types, like BigFloat
+        return @MVector zeros(T,N)
+    else
+        return zeros(T,N)
+    end
 end
