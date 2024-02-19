@@ -22,16 +22,6 @@ end
 
 searchsortedfirst(xx,x) = Base.searchsortedfirst(xx,x)
 
-struct ChebyshevBiRange{R,T}
-    range::R
-    coeffs1::T
-    coeffs2::T
-end
-
-# a lot of chevishev interpolations share the same range.
-Base.first(r::ChebyshevBiRange) = ChebyshevRange(r.range,r.coeffs1)
-Base.last(r::ChebyshevBiRange) = ChebyshevRange(r.range,r.coeffs2)
-
 #evaluation of ranges of chebyshev coefficients
 function cheb_eval(Base.@specialize(cheb), Base.@specialize(x̃))
     Cₙ = cheb.coeffs
@@ -39,19 +29,32 @@ function cheb_eval(Base.@specialize(cheb), Base.@specialize(x̃))
     x̃min = first(x̃range)
     x̃max = last(x̃range)
     if !(x̃min <= x̃ <= x̃max)
+        R = promote_type(eltype(x̃range), eltype(eltype(Cₙ)),typeof(x̃))
         #x is not in range
-        nan = 0.0*zero(x̃)/zero(x̃)
-        return nan
+        return zero(R)/zero(R)
     end
-    imax = searchsortedfirst(x̃range, x̃)
-    imin = imax - 1
-    x̃minᵢ = x̃range[imin]
-    x̃maxᵢ = x̃range[imax]
-    Cₙi = Cₙ[imin]
-    x̄ = (2*x̃ - (x̃maxᵢ + x̃minᵢ)) / (x̃maxᵢ - x̃minᵢ)
+    x̄,i = cheb_xrange(x̃range,x̃)
+    Cₙi = Cₙ[i]
     return cheb_eval(Cₙi,x̄)
 end
 
+function cheb_xrange(x̃range,x̃,reverse = false)
+    if !reverse
+        imax = searchsortedfirst(x̃range, x̃)
+        imin = imax - 1
+        x̃minᵢ = x̃range[imin]
+        x̃maxᵢ = x̃range[imax]
+        i = imin
+    else
+        imax = searchsortedfirst(x̃range, x̃)
+        imin = imax - 1
+        x̃minᵢ = x̃range[imin]
+        x̃maxᵢ = x̃range[imax]
+        i = imin
+    end
+    x̄ = (2*x̃ - (x̃maxᵢ + x̃minᵢ)) / (x̃maxᵢ - x̃minᵢ)
+    return x̄,i
+end
 
 function cheb_eval(cheb::AbstractVector{T},x::S) where {T,S}
     R = promote_type(T, S)
@@ -64,4 +67,17 @@ function cheb_eval(cheb::AbstractVector{T},x::S) where {T,S}
         c0, c1 = cheb[i] - c1, c0 + c1 * 2x
     end
     return R(c0 + c1 * x)
+end
+
+function ChebyshevRange(data::Vector{Tuple{Vector{Float64},Float64,Float64}})
+    n = length(data)
+    c = Vector{Vector{Float64}}(undef,n)
+    r = Vector{Float64}(undef,n + 1)
+    r[1] = data[1][2] #first value of the range, the minimum
+    for i in 1:n
+        coeff,_,xmax = data[i]
+        r[i+1] = xmax
+        c[i] = coeff
+    end
+    return ChebyshevRange(r,c)
 end
