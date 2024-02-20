@@ -38,7 +38,6 @@ Inputs:
 
 Outputs:
 - `rhoc` : Critical density `[mol/m^3]`. Returns `NaN` if the value is outside the range of the ancillary (1 ≤ m ≤ 64).
-```
 """
 function pcsaft_rhoc(m,ϵ,σ)
     m⁻¹ = 1/m
@@ -58,7 +57,6 @@ Inputs:
 
 Outputs:
 - `vc` : Critical volume `[m^3/mol]`. Returns `NaN` if the value is outside the range of the ancillary (1 ≤ m ≤ 64).
-```
 """
 function pcsaft_vc(m,ϵ,σ)
     m⁻¹ = 1/m
@@ -97,7 +95,6 @@ Outputs:
 - `vv` : saturation vapour volume `[m^3/mol]`.
 
 Returns `NaN,NaN` if the value is outside the range of the ancillary (1 ≤ m ≤ 64 and Tmin < T < Tc).
-```
 """
 function pcsaft_vsat(T,m,ϵ,σ)
     T̃ = T/ϵ
@@ -124,7 +121,6 @@ Outputs:
 - `rhov` : saturation vapour volume `[m^3/mol]`.
 
 Returns `NaN,NaN` if the value is outside the range of the ancillary (1 ≤ m ≤ 64 and Tmin < T < Tc).
-```
 """
 function pcsaft_rhosat(T,m,ϵ,σ)
     T̃ = T/ϵ

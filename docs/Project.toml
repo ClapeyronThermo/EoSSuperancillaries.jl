@@ -1,0 +1,6 @@
+[deps]
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+EoSSuperancillaries = "c1bf003f-4e47-49d9-bdfd-5a4051db3c04"
+
+[compat]
+Documenter = "1"

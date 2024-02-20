@@ -1,5 +1,7 @@
 
 [![Build Status](https://github.com/ClapeyronThermo/EoSSuperancillaries.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/ClapeyronThermo/EoSSuperancillaries.jl/actions/workflows/CI.yml?query=branch%3Amain)
+[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://clapeyronthermo.github.io/EoSSuperancillaries.jl/dev)
+[![project chat](https://img.shields.io/badge/zulip-join_chat-brightgreen.svg)](https://julialang.zulipchat.com/#narrow/stream/265161-Clapeyron.2Ejl)
 
 # EoSSuperancillaries
 
