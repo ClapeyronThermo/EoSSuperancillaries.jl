@@ -131,21 +131,22 @@ function pcsaft_rhosat(T,m,ϵ,σ)
     return ρl,ρv
 end
 
-function _pcsaft_rhosat(T̃,m)
-    _0 = zero(T̃+m+1.0)
-    TYPE = typeof(_0)
-    if !(1.0 <= m <= 64.0)
-        nan = zero(TYPE)/zero(TYPE)
-        return nan,nan
-    end
-    m⁻¹ = 1/m
-    T̃c = cheb_eval(PCSAFTsuperanc.Tc,m⁻¹)
-    T̃min = T̃c*exp(-2.20078778)*m^0.37627892
-    if !(T̃min <= T̃ <= T̃c)
-        nan = zero(TYPE)/zero(TYPE)
-        return nan,nan
-    end
+pcsaft_theta(T̃,m) = _pcsaft_theta(T̃,1/m)
+pcsaft_theta(T̃,m,T̃c) = _pcsaft_theta(T̃,1/m,T̃c)
+pcsaft_theta(T̃,m,T̃c,T̃min) = _pcsaft_theta(T̃,1/m,T̃c,T̃min)
+
+function _pcsaft_theta(T̃,m⁻¹,T̃c = cheb_eval(PCSAFTsuperanc.Tc,m⁻¹), T̃min = T̃c*exp(-2.20078778)*m⁻¹^-0.37627892)
+    _0 = zero(T̃+m⁻¹+1.0)
+    0.015625 <= m⁻¹ <= 1.0 || return _0/_0
+    T̃min <= T̃ <= T̃c || return _0/_0
     Θ = (T̃ - T̃min)/(T̃c - T̃min)
+    return Θ
+end
+
+function _pcsaft_rhosat(T̃,m)
+    m⁻¹ = 1/m
+    Θ = _pcsaft_theta(T̃,m⁻¹)
+    isnan(Θ) && return Θ,Θ
     vdata = PCSAFTsuperanc.WDomainComplete
     Wedges = vdata[1]
     WIntervals = vdata[2]
