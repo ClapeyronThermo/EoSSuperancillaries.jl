@@ -11,16 +11,9 @@ struct ChebyshevRange{R,T}
     coeffs::T
 end
 
-function searchsortedfirst(xx::Tuple,x)
-    for (i,xi) in pairs(xx)
-        if xi >= x
-            return i
-        end
-    end
-    return length(xx)
-end
-
-searchsortedfirst(xx,x) = Base.searchsortedfirst(xx,x)
+#overload of searchsortedfirst to also match the first element.
+searchsortedfirst(xx::Tuple,x) = searchsortedfirst(SVector(xx),x)
+searchsortedfirst(xx,x) = Base.searchsortedfirst(xx,x) + isequal(x,first(xx))
 
 #evaluation of ranges of chebyshev coefficients
 function cheb_eval(Base.@specialize(cheb), Base.@specialize(x̃))
@@ -38,20 +31,12 @@ function cheb_eval(Base.@specialize(cheb), Base.@specialize(x̃))
     return cheb_eval(Cₙi,x̄)
 end
 
-function cheb_xrange(x̃range,x̃,reverse = false)
-    if !reverse
+function cheb_xrange(x̃range,x̃)
         imax = searchsortedfirst(x̃range, x̃)
         imin = imax - 1
         x̃minᵢ = x̃range[imin]
         x̃maxᵢ = x̃range[imax]
         i = imin
-    else
-        imax = searchsortedfirst(x̃range, x̃)
-        imin = imax - 1
-        x̃minᵢ = x̃range[imin]
-        x̃maxᵢ = x̃range[imax]
-        i = imin
-    end
     x̄ = (2*x̃ - (x̃maxᵢ + x̃minᵢ)) / (x̃maxᵢ - x̃minᵢ)
     return x̄,i
 end
