@@ -134,7 +134,7 @@ end
 function _pcsaft_rhosat(T̃,m)
     _0 = zero(T̃+m+1.0)
     TYPE = typeof(_0)
-    if !(1.0 <= m <= 64)
+    if !(1.0 <= m <= 64.0)
         nan = zero(TYPE)/zero(TYPE)
         return nan,nan
     end
@@ -150,18 +150,10 @@ function _pcsaft_rhosat(T̃,m)
     Wedges = vdata[1]
     WIntervals = vdata[2]
     w_idx = searchsortedfirst(Wedges,m⁻¹) - 1
-    w_idx += isequal(m,64) #fix from when the value is exactly 64
     sat_data = WIntervals[w_idx]
     edges,liq,vap = sat_data
-
-    ρ̃l_points = mvec(TYPE,Val{17}())
-    ρ̃v_points = mvec(TYPE,Val{17}())
-
-    for i in 1:17
-        ρ̃l_points[i] = cheb_eval(liq[i],Θ)
-        ρ̃v_points[i] = cheb_eval(vap[i],Θ)
-    end   
-
+    ρ̃l_points = svec17(liq,Θ)
+    ρ̃v_points = svec17(vap,Θ)
     cheb_nodes_ρ̃l = Lmat*ρ̃l_points
     cheb_nodes_ρ̃v = Lmat*ρ̃v_points
     b,a = first(edges),last(edges)
@@ -171,10 +163,23 @@ function _pcsaft_rhosat(T̃,m)
     return ρ̃l,ρ̃v
 end
 
-function mvec(::Type{T},::Val{N}) where {T,N}
-    if isbitstype(T) # MVector does not work on non bits types, like BigFloat
-        return @MVector zeros(T,N)
-    else
-        return zeros(T,N)
-    end
+function svec17(cheb,Θ)
+    x1 = cheb_eval(cheb[1],Θ)
+    x2 = cheb_eval(cheb[2],Θ)
+    x3 = cheb_eval(cheb[3],Θ)
+    x4 = cheb_eval(cheb[4],Θ)
+    x5 = cheb_eval(cheb[5],Θ)
+    x6 = cheb_eval(cheb[6],Θ)
+    x7 = cheb_eval(cheb[7],Θ)
+    x8 = cheb_eval(cheb[8],Θ)
+    x9 = cheb_eval(cheb[9],Θ)
+    x10 = cheb_eval(cheb[10],Θ)
+    x11 = cheb_eval(cheb[11],Θ)
+    x12 = cheb_eval(cheb[12],Θ)
+    x13 = cheb_eval(cheb[13],Θ)
+    x14 = cheb_eval(cheb[14],Θ)
+    x15 = cheb_eval(cheb[15],Θ)
+    x16 = cheb_eval(cheb[16],Θ)
+    x17 = cheb_eval(cheb[17],Θ)
+    return SVector((x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,x17))
 end
