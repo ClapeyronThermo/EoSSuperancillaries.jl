@@ -46,6 +46,24 @@ function vdw_vlsat(T,a,b)
 end
 
 """
+    vl,vv = vdw_vsat(T,a,b)
+
+Returns the saturation liquid and vapour volumes of the vdW cubic equation of state.
+
+Inputs:
+- `T`: Temperature (Kelvin)
+- `a`: Atraction parameter `[m^6*Pa/mol]`
+- `b`: Covolume `[m^3/mol]`
+
+Outputs:
+- `vl` : Saturation Liquid Volume `[m^3]`.  Returns `NaN` if the value is outside the range of the ancillary.
+- `vv` : Saturation Vapour Volume `[m^3]`.  Returns `NaN` if the value is outside the range of the ancillary.
+"""
+function vdw_vsat(T,a,b)
+    return _cubic_vsat2(T,a,b,_vdw_vl(),_vdw_vv())
+end
+
+"""
     vv = vdw_vvsat(T,a,b)
 
 Returns the saturation vapour volume of the vdW cubic equation of state.
@@ -79,6 +97,23 @@ function vdw_psat(T,a,b)
     return _cubic_psat(T,a,b,_vdw_p())
 end
 
+"""
+    vl,vv = rk_vsat(T,a,b)
+
+Returns the saturation liquid and vapour volumes of the Redlich-Kwong cubic equation of state.
+
+Inputs:
+- `T`: Temperature (Kelvin)
+- `a`: Atraction parameter `[m^6*Pa/mol]`
+- `b`: Covolume `[m^3/mol]`
+
+Outputs:
+- `vl` : Saturation Liquid Volume `[m^3]`.  Returns `NaN` if the value is outside the range of the ancillary.
+- `vv` : Saturation Vapour Volume `[m^3]`.  Returns `NaN` if the value is outside the range of the ancillary.
+"""
+function rk_vsat(T,a,b)
+    return _cubic_vsat2(T,a,b,_rk_vl(),_rk_vv())
+end
 
 """
     vl = rk_vlsat(T,a,b)
@@ -129,6 +164,24 @@ Outputs:
 """
 function rk_psat(T,a,b)
     return _cubic_psat(T,a,b,_rk_p())
+end
+
+"""
+    vl,vv = pr_vsat(T,a,b)
+
+Returns the saturation liquid and vapour volumes of the Peng-Robinson cubic equation of state.
+
+Inputs:
+- `T`: Temperature (Kelvin)
+- `a`: Atraction parameter `[m^6*Pa/mol]`
+- `b`: Covolume `[m^3/mol]`
+
+Outputs:
+- `vl` : Saturation Liquid Volume `[m^3]`.  Returns `NaN` if the value is outside the range of the ancillary.
+- `vv` : Saturation Vapour Volume `[m^3]`.  Returns `NaN` if the value is outside the range of the ancillary.
+"""
+function pr_vsat(T,a,b)
+    return _cubic_vsat2(T,a,b,_pr_vl(),_pr_vv())
 end
 
 """

@@ -1,4 +1,19 @@
 
+function dct_mat(::Val{N}) where N
+    L = @MMatrix zeros(N+1,N+1)
+    for j = 0:N
+        for k = j:N
+            p_j = (j == 0 || j == N) ? 2 : 1
+            p_k = (k == 0 || k == N) ? 2 : 1
+            L[j+1, k+1] = 2.0 / (p_j * p_k * N) * cos((j * pi * k) / N)
+            L[k+1, j+1] = L[j+1, k+1]
+        end
+    end
+    return L
+end
+
+const Lmat = dct_mat(Val{16}())
+
 """
     Tc = pcsaft_tc(m,ϵ)
 
@@ -64,49 +79,9 @@ function pcsaft_vc(m,ϵ,σ)
     return (N_A*σ*σ*σ)/ρ̃c
 end
 
-function dct_mat(::Val{N}) where N
-    L = @MMatrix zeros(N+1,N+1)
-    for j = 0:N
-        for k = j:N
-            p_j = (j == 0 || j == N) ? 2 : 1
-            p_k = (k == 0 || k == N) ? 2 : 1
-            L[j+1, k+1] = 2.0 / (p_j * p_k * N) * cos((j * pi * k) / N)      
-            L[k+1, j+1] = L[j+1, k+1]
-        end
-    end
-    return L
-end
-
-const Lmat = dct_mat(Val{16}())
 
 """
-    vc = pcsaft_vsat(T,m,ϵ,σ)
-
-Returns the saturation volume of the PCSAFT equation of state at the input temperature `T`.
-
-Inputs:
-- `T`: Saturation temperature (Kelvin)
-- `m`: Segment length (no units)
-- `ϵ`: Reduced interaction energy `[K]`
-- `σ`: Monomer diameter `[m]`
-
-Outputs:
-- `vl` : saturation liquid volume `[m^3/mol]`. 
-- `vv` : saturation vapour volume `[m^3/mol]`.
-
-Returns `NaN,NaN` if the value is outside the range of the ancillary (1 ≤ m ≤ 64 and Tmin < T < Tc).
-"""
-function pcsaft_vsat(T,m,ϵ,σ)
-    T̃ = T/ϵ
-    ρ̃l,ρ̃v = _pcsaft_rhosat(T̃,m)
-    N_Aσ3 = N_A*σ*σ*σ
-    vl = N_Aσ3/ρ̃l
-    vv = N_Aσ3/ρ̃v
-    return vl,vv
-end
-
-"""
-    vc = pcsaft_rhosat(T,m,ϵ,σ)
+    vl,vv = pcsaft_vsat(T,m,ϵ,σ)
 
 Returns the saturation volumes of the PCSAFT equation of state at the input temperature `T`.
 
@@ -117,19 +92,125 @@ Inputs:
 - `σ`: Monomer diameter `[m]`
 
 Outputs:
-- `rhol` : saturation liquid volume `[m^3/mol]`. 
-- `rhov` : saturation vapour volume `[m^3/mol]`.
+- `vl` : saturation liquid volume `[m^3/mol]`.
+- `vv` : saturation vapour volume `[m^3/mol]`.
+
+Returns `NaN,NaN` if the value is outside the range of the ancillary (1 ≤ m ≤ 64 and Tmin < T < Tc).
+"""
+function pcsaft_vsat(T,m,ϵ,σ)
+    T̃ = T/ϵ
+    m⁻¹ = 1/m
+    θ,_ = _pcsaft_theta(T̃,m⁻¹)
+    ρ̃l,ρ̃v = _pcsaft_rhosat(θ,m⁻¹)
+    N_Aσ3 = N_A*σ*σ*σ
+    vl = N_Aσ3/ρ̃l
+    vv = N_Aσ3/ρ̃v
+    return vl,vv
+end
+
+"""
+    rhol,rhov = pcsaft_rhosat(T,m,ϵ,σ)
+
+Returns the saturation densities of the PCSAFT equation of state at the input temperature `T`.
+
+Inputs:
+- `T`: Saturation temperature (Kelvin)
+- `m`: Segment length (no units)
+- `ϵ`: Reduced interaction energy `[K]`
+- `σ`: Monomer diameter `[m]`
+
+Outputs:
+- `rhol` : saturation liquid density `[mol/m^3]`.
+- `rhov` : saturation vapour density `[mol/m^3]`.
 
 Returns `NaN,NaN` if the value is outside the range of the ancillary (1 ≤ m ≤ 64 and Tmin < T < Tc).
 """
 function pcsaft_rhosat(T,m,ϵ,σ)
     T̃ = T/ϵ
-    ρ̃l,ρ̃v = _pcsaft_rhosat(T̃,m)
+    m⁻¹ = 1/m
+    θ,_ = _pcsaft_theta(T̃,m⁻¹)
+    ρ̃l,ρ̃v = _pcsaft_rhosat(θ,m⁻¹)
     N_Aσ3 = N_A*σ*σ*σ
     ρl = ρ̃l/N_Aσ3
     ρv = ρ̃v/N_Aσ3
     return ρl,ρv
 end
+
+"""
+    vl = pcsaft_vlsat(T,m,ϵ,σ)
+
+Returns the saturation liquid volume of the PCSAFT equation of state at the input temperature `T`.
+
+Inputs:
+- `T`: Saturation temperature (Kelvin)
+- `m`: Segment length (no units)
+- `ϵ`: Reduced interaction energy `[K]`
+- `σ`: Monomer diameter `[m]`
+
+Outputs:
+- `vl` : saturation liquid volume `[m^3/mol]`.
+
+Returns `NaN` if the value is outside the range of the ancillary (1 ≤ m ≤ 64 and Tmin < T < Tc).
+"""
+function pcsaft_vvsat(T,m,ϵ,σ)
+    T̃ = T/ϵ
+    m⁻¹ = 1/m
+    θ,_ = _pcsaft_theta(T̃,m⁻¹)
+    ρ̃v = _pcsaft_rhovsat(θ,m⁻¹)
+    N_Aσ3 = N_A*σ*σ*σ
+    vv = N_Aσ3/ρ̃v
+    return vv
+end
+
+"""
+    vv = pcsaft_vvsat(T,m,ϵ,σ)
+
+Returns the saturation vapour volume of the PCSAFT equation of state at the input temperature `T`.
+
+Inputs:
+- `T`: Saturation temperature (Kelvin)
+- `m`: Segment length (no units)
+- `ϵ`: Reduced interaction energy `[K]`
+- `σ`: Monomer diameter `[m]`
+
+Outputs:
+- `vl` : saturation liquid volume `[m^3/mol]`.
+
+Returns `NaN` if the value is outside the range of the ancillary (1 ≤ m ≤ 64 and Tmin < T < Tc).
+"""
+function pcsaft_vlsat(T,m,ϵ,σ)
+    T̃ = T/ϵ
+    m⁻¹ = 1/m
+    θ,_ = _pcsaft_theta(T̃,m⁻¹)
+    ρ̃l = _pcsaft_rholsat(θ,m⁻¹)
+    N_Aσ3 = N_A*σ*σ*σ
+    vl = N_Aσ3/ρ̃l
+    return vl
+end
+
+"""
+    Θ,status = pcsaft_theta(T̃,m)
+    Θ,status = pcsaft_theta(T̃,m,T̃c)
+
+Calculates reduced scaled temperature parameter used in PCSAFT saturation volume superancillary
+
+Inputs:
+- `T̃`: Temperature divided by reduced interaction energy (`T/ϵ`) (no units)
+- `m`: Segment length (no units)
+- `T̃c`: (Optional) Reduced critical temperature (`Tc/ϵ`) (no units)
+
+Outputs:
+- `Θ` : scaled temperature parameter (no units)
+- `status` : `Symbol` used to signal if the combination of `T̃`,`m` is valid or not. It can return one of the following:
+
+    - `:inrange` : if the combination is valid
+    - `:nonfinite` : if any input is not finite
+    - `:below_mmin` : if `m` < 1.0
+    - `:over_mmax` : if `m` > 64.0
+    - `:below_Tmin` : if `T̃` < T̃min, where `T̃min` = `T̃c*exp(-2.20078778)*m^0.37627892`
+    - `:over_Tmax` : if `T̃` > T̃c
+"""
+function pcsaft_theta end
 
 pcsaft_theta(T̃,m) = _pcsaft_theta(T̃,1/m)
 pcsaft_theta(T̃,m,T̃c) = _pcsaft_theta(T̃,1/m,T̃c)
@@ -137,15 +218,84 @@ pcsaft_theta(T̃,m,T̃c,T̃min) = _pcsaft_theta(T̃,1/m,T̃c,T̃min)
 
 function _pcsaft_theta(T̃,m⁻¹,T̃c = cheb_eval(PCSAFTsuperanc.Tc,m⁻¹), T̃min = T̃c*exp(-2.20078778)*m⁻¹^-0.37627892)
     _0 = zero(T̃+m⁻¹+1.0)
-    0.015625 <= m⁻¹ <= 1.0 || return _0/_0
-    T̃min <= T̃ <= T̃c || return _0/_0
-    Θ = (T̃ - T̃min)/(T̃c - T̃min)
-    return Θ
+    if isnan(T̃) || isnan(m⁻¹) || isnan(T̃c) || isnan(T̃min)
+        return _0/_0,:nonfinite
+    elseif 0.015625 > m⁻¹
+        return _0/_0,:over_mmax
+    elseif m⁻¹ > 1.0
+        return _0/_0,:under_mmin
+    elseif T̃min > T̃
+        return _0/_0,:below_Tmin
+    elseif T̃ > T̃c
+        return _0/_0,:over_Tmax
+    else
+        Θ = (T̃ - T̃min)/(T̃c - T̃min)
+        return Θ,:inrange
+    end
 end
 
-function _pcsaft_rhosat(T̃,m)
+"""
+    ρ̃l = pcsaft_rholsat_reduced(Θ,m)
+
+Calculates the reduced liquid saturation density. The actual density is `ρ = ρ̃/(N_A*σ^3)`
+
+Inputs:
+
+- `Θ`: reduced temperature parameter (no units)
+- `m`: Segment length (no units)
+
+Outputs:
+- `ρ̃l` : reduced saturation liquid density (no units)
+
+Returns `NaN` if the value is outside the range of the ancillary (1 ≤ m ≤ 64 and 0 < Θ < 1).
+"""
+function pcsaft_rholsat_reduced(Θ,m)
     m⁻¹ = 1/m
-    Θ = _pcsaft_theta(T̃,m⁻¹)
+    return _pcsaft_rholsat(Θ,m⁻¹)
+end
+
+"""
+    ρ̃v = pcsaft_rhovsat_reduced(Θ,m)
+
+Calculates the reduced vapour saturation density. The actual density is `ρ = ρ̃/(N_A*σ^3)`
+
+Inputs:
+
+- `Θ`: reduced temperature parameter (no units)
+- `m`: Segment length (no units)
+
+Outputs:
+- `ρ̃v` : reduced saturation vapour density (no units)
+
+Returns `NaN` if the value is outside the range of the ancillary (1 ≤ m ≤ 64 and 0 < Θ < 1).
+"""
+function pcsaft_rhovsat_reduced(Θ,m)
+    m⁻¹ = 1/m
+    return _pcsaft_rhovsat(Θ,m⁻¹)
+end
+
+"""
+    ρ̃l,ρ̃v = pcsaft_rhosat_reduced(Θ,m)
+
+Calculates the reduced saturation densities. The actual densities are calculated as `ρᵢ = ρ̃ᵢ/(N_A*σ^3)`
+
+Inputs:
+
+- `Θ`: reduced temperature parameter (no units)
+- `m`: Segment length (no units)
+
+Outputs:
+- `ρ̃l` : reduced saturation liquid density (no units)
+- `ρ̃v` : reduced saturation vapour density (no units)
+
+Returns `NaN` if the value is outside the range of the ancillary (1 ≤ m ≤ 64 and 0 < Θ < 1).
+"""
+function pcsaft_rhosat_reduced(Θ,m)
+    m⁻¹ = 1/m
+    return _pcsaft_rhosat(Θ,m⁻¹)
+end
+
+function _pcsaft_rhosat(Θ,m⁻¹)
     isnan(Θ) && return Θ,Θ
     vdata = PCSAFTsuperanc.WDomainComplete
     Wedges = vdata[1]
@@ -162,6 +312,38 @@ function _pcsaft_rhosat(T̃,m)
     ρ̃l = cheb_eval(cheb_nodes_ρ̃l,w)
     ρ̃v = cheb_eval(cheb_nodes_ρ̃v,w)
     return ρ̃l,ρ̃v
+end
+
+function _pcsaft_rholsat(Θ,m⁻¹)
+    isnan(Θ) && return Θ
+    vdata = PCSAFTsuperanc.WDomainComplete
+    Wedges = vdata[1]
+    WIntervals = vdata[2]
+    w_idx = searchsortedfirst(Wedges,m⁻¹) - 1
+    sat_data = WIntervals[w_idx]
+    edges,liq,_ = sat_data
+    ρ̃l_points = svec17(liq,Θ)
+    cheb_nodes_ρ̃l = Lmat*ρ̃l_points
+    b,a = first(edges),last(edges)
+    w = (2*m⁻¹ - (b + a))/(b - a)
+    ρ̃l = cheb_eval(cheb_nodes_ρ̃l,w)
+    return ρ̃l
+end
+
+function _pcsaft_rhovsat(Θ,m⁻¹)
+    isnan(Θ) && return Θ
+    vdata = PCSAFTsuperanc.WDomainComplete
+    Wedges = vdata[1]
+    WIntervals = vdata[2]
+    w_idx = searchsortedfirst(Wedges,m⁻¹) - 1
+    sat_data = WIntervals[w_idx]
+    edges,_,vap = sat_data
+    ρ̃v_points = svec17(vap,Θ)
+    cheb_nodes_ρ̃v = Lmat*ρ̃l_points
+    b,a = first(edges),last(edges)
+    w = (2*m⁻¹ - (b + a))/(b - a)
+    ρ̃v = cheb_eval(cheb_nodes_ρ̃v,w)
+    return ρ̃v
 end
 
 function svec17(cheb,Θ)
