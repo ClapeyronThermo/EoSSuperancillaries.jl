@@ -5,13 +5,13 @@ CurrentModule = EoSSuperancillaries
 ## Contents
 
 ```@contents
-Pages = ["api.md"]
+Pages = ["pr.md"]
 ```
 
 ## Index
 
 ```@index
-Pages = ["api.md"]
+Pages = ["pr.md"]
 ```
 
 ## Peng-Robinson superancillaries

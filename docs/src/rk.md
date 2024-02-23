@@ -5,13 +5,13 @@ CurrentModule = EoSSuperancillaries
 ## Contents
 
 ```@contents
-Pages = ["api.md"]
+Pages = ["rk.md"]
 ```
 
 ## Index
 
 ```@index
-Pages = ["api.md"]
+Pages = ["rk.md"]
 ```
 
 ## Redlich-Kwong superancillaries

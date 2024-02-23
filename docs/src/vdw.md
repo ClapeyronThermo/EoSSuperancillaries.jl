@@ -5,13 +5,13 @@ CurrentModule = EoSSuperancillaries
 ## Contents
 
 ```@contents
-Pages = ["api.md"]
+Pages = ["vdw.md"]
 ```
 
 ## Index
 
 ```@index
-Pages = ["api.md"]
+Pages = ["vdw.md"]
 ```
 
 ## van der Wals superancillaries
