@@ -35,11 +35,15 @@ end
     m1,m64 = 1,64
     T̃c1 = ES.pcsaft_tc(m1,1.0)
     T̃c64 = ES.pcsaft_tc(m64,1.0)
+    theta_09_01 = ES.pcsaft_theta(0.9*T̃c1,m1)[1]
+    theta_07_01 = ES.pcsaft_theta(0.7*T̃c1,m1)[1]
+    theta_09_64 = ES.pcsaft_theta(0.9*T̃c64,m64)[1]
+    theta_07_64 = ES.pcsaft_theta(0.7*T̃c64,m64)[1]
     @test 0.9*T̃c1 ≈ 1.1481738529594
-    rhol_m1_09,rhov_m1_09 = ES._pcsaft_rhosat(0.9*T̃c1,m1)
-    rhol_m1_07,rhov_m1_07 = ES._pcsaft_rhosat(0.7*T̃c1,m1)
-    rhol_m64_09,rhov_m64_09 = ES._pcsaft_rhosat(0.9*T̃c64,m64)
-    rhol_m64_07,rhov_m64_07 = ES._pcsaft_rhosat(0.7*T̃c64,m64)
+    rhol_m1_09,rhov_m1_09 = ES.pcsaft_rhosat_reduced(theta_09_01,m1)
+    rhol_m1_07,rhov_m1_07 = ES.pcsaft_rhosat_reduced(theta_07_01,m1)
+    rhol_m64_09,rhov_m64_09 = ES.pcsaft_rhosat_reduced(theta_09_64,m64)
+    rhol_m64_07,rhov_m64_07 = ES.pcsaft_rhosat_reduced(theta_07_64,m64)
     @test rhol_m1_09 ≈ 0.578301305568106
     @test rhov_m1_09 ≈ 0.081366617928304
     @test rhol_m1_07 ≈ 0.742270101982426
