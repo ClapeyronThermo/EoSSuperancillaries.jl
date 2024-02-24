@@ -93,7 +93,7 @@ Outputs:
 - `vl` : saturation liquid volume `[m^3/mol]`.
 - `vv` : saturation vapour volume `[m^3/mol]`.
 
-Returns `NaN,NaN` if the value is outside the range of the ancillary (1 ≤ m ≤ 64 and Tmin < T < Tc).
+Returns `NaN,NaN` if the value is outside the range of the ancillary (1 ≤ `m` ≤ 64 and `Tmin` < `T` < `Tc`).
 """
 function pcsaft_vsat(T,m,ϵ,σ)
     T̃ = T/ϵ
@@ -121,7 +121,7 @@ Outputs:
 - `rhol` : saturation liquid density `[mol/m^3]`.
 - `rhov` : saturation vapour density `[mol/m^3]`.
 
-Returns `NaN,NaN` if the value is outside the range of the ancillary (1 ≤ m ≤ 64 and Tmin < T < Tc).
+Returns `NaN,NaN` if the value is outside the range of the ancillary (1 ≤ `m` ≤ 64 and `Tmin` < `T` < `Tc`).
 """
 function pcsaft_rhosat(T,m,ϵ,σ)
     T̃ = T/ϵ
@@ -148,7 +148,7 @@ Inputs:
 Outputs:
 - `vl` : saturation liquid volume `[m^3/mol]`.
 
-Returns `NaN` if the value is outside the range of the ancillary (1 ≤ m ≤ 64 and Tmin < T < Tc).
+Returns `NaN` if the value is outside the range of the ancillary (1 ≤ `m` ≤ 64 and `Tmin` < `T` < `Tc`).
 """
 function pcsaft_vvsat(T,m,ϵ,σ)
     T̃ = T/ϵ
@@ -174,7 +174,7 @@ Inputs:
 Outputs:
 - `vl` : saturation liquid volume `[m^3/mol]`.
 
-Returns `NaN` if the value is outside the range of the ancillary (1 ≤ m ≤ 64 and Tmin < T < Tc).
+Returns `NaN` if the value is outside the range of the ancillary (1 ≤ `m` ≤ 64 and `Tmin` < `T` < `Tc`).
 """
 function pcsaft_vlsat(T,m,ϵ,σ)
     T̃ = T/ϵ
@@ -205,8 +205,8 @@ Outputs:
     - `:nonfinite` : if any input is not finite
     - `:below_mmin` : if `m` < 1.0
     - `:over_mmax` : if `m` > 64.0
-    - `:below_Tmin` : if `T̃` < T̃min, where `T̃min` = `T̃c*exp(-2.20078778)*m^0.37627892`
-    - `:over_Tmax` : if `T̃` > T̃c
+    - `:below_Tmin` : if `T̃` < `T̃min`, where `T̃min` = `T̃c*exp(-2.20078778)*m^0.37627892`
+    - `:over_Tmax` : if `T̃` > `T̃c`
 """
 function pcsaft_theta end
 

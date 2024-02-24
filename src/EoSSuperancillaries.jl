@@ -7,7 +7,7 @@ include("PCSAFT/consts.jl")
 include("PCSAFT/pcsaft.jl")
 
 export pr_psat,pr_vlsat,pr_vvsat,pr_vsat
-export vdv_psat,vdv_vlsat,vdv_vvsat,vdv_vsat
+export vdw_psat,vdw_vlsat,vdw_vvsat,vdw_vsat
 export rk_psat,rk_vlsat,rk_vvsat,rk_vsat
 
 export pcsaft_tc,pcsaft_rhoc,pcsaft_vc
