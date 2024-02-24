@@ -42,38 +42,36 @@ function pcsaft_tc(m,ϵ)
 end
 
 """
-    rhoc = pcsaft_rhoc(m,ϵ,σ)
+    rhoc = pcsaft_rhoc(m,σ)
 
 Returns the critical density of the PCSAFT equation of state.
 
 Inputs:
 - `m`: Segment length (no units)
-- `ϵ`: Reduced interaction energy `[K]`
 - `σ`: Monomer diameter `[m]`
 
 Outputs:
 - `rhoc` : Critical density `[mol/m^3]`. Returns `NaN` if the value is outside the range of the ancillary (1 ≤ m ≤ 64).
 """
-function pcsaft_rhoc(m,ϵ,σ)
+function pcsaft_rhoc(m,σ)
     m⁻¹ = 1/m
     ρ̃c = cheb_eval(PCSAFTsuperanc.rho_c,m⁻¹)
     return ρ̃c/(N_A*σ*σ*σ)
 end
 
 """
-    vc = pcsaft_vc(m,ϵ,σ)
+    vc = pcsaft_vc(m,σ)
 
 Returns the critical volume of the PCSAFT equation of state. Equal to `1/pcsaft_rhoc(m,ϵ,σ)`
 
 Inputs:
 - `m`: Segment length (no units)
-- `ϵ`: Reduced interaction energy `[K]`
 - `σ`: Monomer diameter `[m]`
 
 Outputs:
 - `vc` : Critical volume `[m^3/mol]`. Returns `NaN` if the value is outside the range of the ancillary (1 ≤ m ≤ 64).
 """
-function pcsaft_vc(m,ϵ,σ)
+function pcsaft_vc(m,σ)
     m⁻¹ = 1/m
     ρ̃c = cheb_eval(PCSAFTsuperanc.rho_c,m⁻¹)
     return (N_A*σ*σ*σ)/ρ̃c
