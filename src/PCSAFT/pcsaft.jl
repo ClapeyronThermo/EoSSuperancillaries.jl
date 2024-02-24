@@ -55,7 +55,7 @@ Outputs:
 """
 function pcsaft_rhoc(m,σ)
     m⁻¹ = 1/m
-    ρ̃c = cheb_eval(PCSAFTsuperanc.rho_c,m⁻¹)
+    ρ̃c = cheb_eval(PCSAFTsuperanc.rhoc,m⁻¹)
     return ρ̃c/(N_A*σ*σ*σ)
 end
 
@@ -73,7 +73,7 @@ Outputs:
 """
 function pcsaft_vc(m,σ)
     m⁻¹ = 1/m
-    ρ̃c = cheb_eval(PCSAFTsuperanc.rho_c,m⁻¹)
+    ρ̃c = cheb_eval(PCSAFTsuperanc.rhoc,m⁻¹)
     return (N_A*σ*σ*σ)/ρ̃c
 end
 
