@@ -1,7 +1,7 @@
 name = "EoSSuperancillaries"
 uuid = "c1bf003f-4e47-49d9-bdfd-5a4051db3c04"
 authors = ["Pierre Walker <pjwalker@caltech.edu>", "Andrés Riedemann <andres.riedemann@gmail.com>"]
-version = "1.2.2"
+version = "1.2.3"
 
 [deps]
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"

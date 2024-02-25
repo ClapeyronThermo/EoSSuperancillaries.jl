@@ -4,7 +4,7 @@ function _cubic_vsat(T,a,b,CV)
     return b/ρ
 end
 
-function _cubic_vsat2(T,a,b,CV,VL)
+function _cubic_vsat2(T,a,b,CL,CV)
     T̃ = T*R̄*b/a
     ρl = cheb_eval(CL,T̃)
     ρv = cheb_eval(CV,T̃)

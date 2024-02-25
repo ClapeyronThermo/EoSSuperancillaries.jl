@@ -21,6 +21,8 @@ using EoSSuperancillaries: cheb_eval
         @test cheb_eval(ES._pr_p(),T̃) ≈ 0.003034198868923775
         @test cheb_eval(ES._pr_vl(),T̃) ≈ 0.6394564580846998
         @test cheb_eval(ES._pr_vv(),T̃) ≈ 0.03023195086998487
+        #tcPR values for water, minus translation
+        @test pr_vsat(373.15,0.872992520895242,1.8970393160040243e-5)[1] ≈ 2.2534096665506367e-5
     end
     # Write your tests here.
 end
