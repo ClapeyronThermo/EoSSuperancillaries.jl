@@ -11,6 +11,8 @@ struct ChebyshevRange{R,T}
     coeffs::T
 end
 
+const ChebishevRangeV64 = ChebyshevRange{Vector{Float64},Vector{Vector{Float64}}}
+
 #overload of searchsortedfirst to also match the first element.
 searchsortedfirst(xx::Tuple,x) = searchsortedfirst(SVector(xx),x)
 searchsortedfirst(xx,x) = Base.searchsortedfirst(xx,x) + isequal(x,first(xx))
@@ -65,4 +67,32 @@ function ChebyshevRange(data::Vector{Tuple{Vector{Float64},Float64,Float64}})
         c[i] = coeff
     end
     return ChebyshevRange(r,c)
+end
+
+function ChebyshevRange(data::AbstractVector{T}) where T<:AbstractDict
+    n = length(data)
+    c = Vector{Vector{Float64}}(undef,n)
+    r = Vector{Float64}(undef,n + 1)
+    r[1] = data[1][:xmin] #first value of the range, the minimum
+    for i in 1:n
+        data_i = data[i]
+        coeff = data_i[:coeff]
+        xmax = data_i[:xmax]
+        r[i+1] = xmax
+        c[i] = coeff
+    end
+    return ChebyshevRange(r,c)
+end
+
+function dct_mat(::Val{N}) where N
+    L = @MMatrix zeros(N+1,N+1)
+    for j = 0:N
+        for k = j:N
+            p_j = (j == 0 || j == N) ? 2 : 1
+            p_k = (k == 0 || k == N) ? 2 : 1
+            L[j+1, k+1] = 2.0 / (p_j * p_k * N) * cos((j * pi * k) / N)
+            L[k+1, j+1] = L[j+1, k+1]
+        end
+    end
+    return L
 end

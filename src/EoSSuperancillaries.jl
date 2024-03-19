@@ -1,6 +1,8 @@
 module EoSSuperancillaries
 using StaticArrays
+using LinearAlgebra
 include("utils.jl")
+include("dyadic_splitting.jl")
 include("Cubic/consts.jl")
 include("Cubic/cubic.jl")
 include("PCSAFT/consts.jl")

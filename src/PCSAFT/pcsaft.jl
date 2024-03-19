@@ -1,18 +1,4 @@
-
-function dct_mat(::Val{N}) where N
-    L = @MMatrix zeros(N+1,N+1)
-    for j = 0:N
-        for k = j:N
-            p_j = (j == 0 || j == N) ? 2 : 1
-            p_k = (k == 0 || k == N) ? 2 : 1
-            L[j+1, k+1] = 2.0 / (p_j * p_k * N) * cos((j * pi * k) / N)
-            L[k+1, j+1] = L[j+1, k+1]
-        end
-    end
-    return L
-end
-
-const Lmat = dct_mat(Val{16}())
+const Lmat16 = dct_mat(Val{16}())
 
 """
     Tc = pcsaft_tc(m,ϵ)
@@ -303,8 +289,8 @@ function _pcsaft_rhosat(Θ,m⁻¹)
     edges,liq,vap = sat_data
     ρ̃l_points = svec17(liq,Θ)
     ρ̃v_points = svec17(vap,Θ)
-    cheb_nodes_ρ̃l = Lmat*ρ̃l_points
-    cheb_nodes_ρ̃v = Lmat*ρ̃v_points
+    cheb_nodes_ρ̃l = Lmat16*ρ̃l_points
+    cheb_nodes_ρ̃v = Lmat16*ρ̃v_points
     b,a = first(edges),last(edges)
     w = (2*m⁻¹ - (b + a))/(b - a)
     ρ̃l = cheb_eval(cheb_nodes_ρ̃l,w)
@@ -321,7 +307,7 @@ function _pcsaft_rholsat(Θ,m⁻¹)
     sat_data = WIntervals[w_idx]
     edges,liq,_ = sat_data
     ρ̃l_points = svec17(liq,Θ)
-    cheb_nodes_ρ̃l = Lmat*ρ̃l_points
+    cheb_nodes_ρ̃l = Lmat16*ρ̃l_points
     b,a = first(edges),last(edges)
     w = (2*m⁻¹ - (b + a))/(b - a)
     ρ̃l = cheb_eval(cheb_nodes_ρ̃l,w)
@@ -337,7 +323,7 @@ function _pcsaft_rhovsat(Θ,m⁻¹)
     sat_data = WIntervals[w_idx]
     edges,_,vap = sat_data
     ρ̃v_points = svec17(vap,Θ)
-    cheb_nodes_ρ̃v = Lmat*ρ̃l_points
+    cheb_nodes_ρ̃v = Lmat16*ρ̃l_points
     b,a = first(edges),last(edges)
     w = (2*m⁻¹ - (b + a))/(b - a)
     ρ̃v = cheb_eval(cheb_nodes_ρ̃v,w)
