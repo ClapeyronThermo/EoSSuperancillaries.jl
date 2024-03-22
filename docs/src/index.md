@@ -14,6 +14,7 @@ It can calculate the following properties:
 - van der Wals: saturated densities, saturated pressures.
 - Redlich-Kwong: saturated densities, saturated pressures.
 - Peng-Robinson: saturated densities, saturated pressures.
+- REFPROP reference equations: saturated densities, saturated pressures.
 
 ## Installation
 
@@ -95,6 +96,19 @@ function my_pcsaft_rholsat(T,m,ϵ,σ)
 
 This is useful in the cases where you want to benchmark your own saturation solver, or if you are working with extended precision arithmetic.
 
+## REFPROP
+
+Superancillaries for all 147 REFPROP 10.0 fluids have been fitted. those superancillaries cover from the critical point to the triple point of most fluids. for Helium, the minimum temperature is its lambda point. 
+
+In this case, you need to instantiate a `REFPROPSuperAnc` object first and call the superancillaries with that object:
+
+```julia
+water = refprop_superanc("water")
+p0 = ref_psat(water,373.15)
+```
+
+A table with synonyms accepted by `refprop_superanc` is found [here](@ref refprop_fluids)
+
 ## Notes on low reduced temperatures
 
 With both cubics and PC-SAFT, the saturation curves are defined in a range `Tmin < T < Tc`. on low reduced temperatures, the magnitude of the proportion between volumes (`vv/vl`) reaches the limits of `Float64` arithmetic. for solving at temperatures below those ranges, it is recommended to use extended precision numbers (like `BigFloat`).
@@ -102,3 +116,4 @@ With both cubics and PC-SAFT, the saturation curves are defined in a range `Tmin
 ## References
 1. Bell, I. H., & Deiters, U. K. (2021). Superancillary equations for cubic equations of state. Industrial & Engineering Chemistry Research, 60(27), 9983–9991. [doi:10.1021/acs.iecr.1c00847](https://doi.org/10.1021/acs.iecr.1c00847)
 2. Bell, I. H., & Deiters, U. K. (2023). Superancillary equations for nonpolar pure fluids modeled with the PC-SAFT equation of state. Industrial & Engineering Chemistry Research. [doi:10.1021/acs.iecr.2c02916](https://doi.org/10.1021/acs.iecr.2c02916)
+3. Bell, I. H. (2024). Superancillary equations for the multiparameter equations of state in REFPROP 10.0. Journal of Physical and Chemical Reference Data, 53(1). [doi:10.1063/5.0191228](https://doi.org/10.1063/5.0191228)

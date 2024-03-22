@@ -11,7 +11,8 @@ struct ChebyshevRange{R,T}
     coeffs::T
 end
 
-const ChebishevRangeV64 = ChebyshevRange{Vector{Float64},Vector{Vector{Float64}}}
+const ChebyshevRangeV64 = ChebyshevRange{Vector{Float64},Vector{Vector{Float64}}}
+const ChebyshevRangeVec{T} = ChebyshevRange{Vector{T},Vector{Vector{T}}} where T
 
 #overload of searchsortedfirst to also match the first element.
 searchsortedfirst(xx::Tuple,x) = searchsortedfirst(SVector(xx),x)
@@ -69,14 +70,15 @@ function ChebyshevRange(data::Vector{Tuple{Vector{Float64},Float64,Float64}})
     return ChebyshevRange(r,c)
 end
 
-function ChebyshevRange(data::AbstractVector{T}) where T<:AbstractDict
+function ChebyshevRange(data::AbstractVector)
+    first(data) isa AbstractDict || throw(ArgumentError("data must be a vector of dictionaries or named tuples"))
     n = length(data)
     c = Vector{Vector{Float64}}(undef,n)
     r = Vector{Float64}(undef,n + 1)
     r[1] = data[1][:xmin] #first value of the range, the minimum
     for i in 1:n
         data_i = data[i]
-        coeff = data_i[:coeff]
+        coeff = data_i[:coef]
         xmax = data_i[:xmax]
         r[i+1] = xmax
         c[i] = coeff
@@ -84,15 +86,73 @@ function ChebyshevRange(data::AbstractVector{T}) where T<:AbstractDict
     return ChebyshevRange(r,c)
 end
 
-function dct_mat(::Val{N}) where N
-    L = @MMatrix zeros(N+1,N+1)
+function dct_mat(n::Int,type::Type{T}) where T
+    L = zeros(T,n+1,n+1)
+    return dct_mat!(L)
+end
+
+dct_mat(n::Int) = dct_mat(n,Float64)
+
+function dct_mat(n::Val{N},type::Type{T}) where {N,T}
+    L = @MMatrix zeros(T,N+1,N+1)
+    return dct_mat!(L)
+end
+
+dct_mat(n::Val{N}) where {N} = dct_mat(n,Float64)
+
+function dct_mat!(L::AbstractMatrix{T}) where T
+    N = size(L,1) - 1
+    N̄ = T(N)
+    _2 = T(2)
     for j = 0:N
         for k = j:N
             p_j = (j == 0 || j == N) ? 2 : 1
             p_k = (k == 0 || k == N) ? 2 : 1
-            L[j+1, k+1] = 2.0 / (p_j * p_k * N) * cos((j * pi * k) / N)
+            L[j+1, k+1] = _2 / T(p_j * p_k * N) * cos(T(j * pi * k) / N̄)
             L[k+1, j+1] = L[j+1, k+1]
         end
     end
     return L
 end
+
+#merges two Chebishev ranges, invalidates both.
+function merge_chebs!(left::ChebyshevRangeVec{T},right::ChebyshevRangeVec{T}) where T
+    append!(left.range, @view(right.range[2:end]))
+    left_coeffs = left.coeffs
+    right_coeffs = right.coeffs
+    for i in 1:length(right_coeffs)
+        push!(left_coeffs, right_coeffs[i])
+    end
+    return left
+end
+
+function Base.convert(::Type{T},f::ChebyshevRangeVec{T2}) where {T,T2}
+    coeffs = [T.(coef) for coef in f.coeffs]
+    return ChebyshevRange(T.(f.range),coeffs)
+end
+
+(f::ChebyshevRange)(x) = cheb_eval(f,x)
+
+
+#supposes univariate
+#=
+function cheb_eval_inv(cheb::ChebyshevRange,fx::T) where T
+    x = cheb.range
+    coef = cheb.coef
+    if length(x) == 2
+        return cheb_eval_inv_brent(coef[1],fx)
+    end
+    f_first = cheb_eval(coef[1],T(-1))
+    f_last = cheb_eval(coef[end],T(1))
+    if !(f_first <= fx <= f_last) || !(f_last <= fx <= f_first)
+        return zero(fx)/zero(fx)
+    end
+    increasing = f_first < f_last
+    increasing_sign = increasing ? 1 : -1
+end
+
+function cheb_eval_inv(coef,fx)
+     
+end
+
+=#

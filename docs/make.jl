@@ -11,7 +11,11 @@ makedocs(sitename = "EoSSuperancillaries.jl",
             "API" =>["van der Wals" => "vdw.md",
             "Redlich-Kwong" => "rk.md",        
             "Peng-Robinson" => "pr.md",
-            "PC-SAFT" => "pcsaft.md"]]
+            "PC-SAFT" => "pcsaft.md"
+            "REFPROP" => [
+                "REFPROP superancillaries" => "refprop.md"
+                "list of fluids" => "refprop_fluids.md"]
+            ]]
     )
 
 deploydocs(repo="github.com/ClapeyronThermo/EoSSuperancillaries.jl.git")
