@@ -14,7 +14,7 @@ makedocs(sitename = "EoSSuperancillaries.jl",
             "PC-SAFT" => "pcsaft.md",
             "REFPROP" => [
                 "REFPROP superancillaries" => "refprop.md",
-                "list of fluids" => "refprop_fluids.md"]
+                "List of Fluids" => "refprop_fluids.md"]
             ]]
     )
 

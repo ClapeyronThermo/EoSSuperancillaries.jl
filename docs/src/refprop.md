@@ -18,7 +18,8 @@ Pages = ["refprop.md"]
 
 ```@docs
 EoSSuperancillaries.refprop_superanc
-EoSSuperancillaries.ref_vsat
+EoSSuperancillaries.ref_rholsat
+EoSSuperancillaries.ref_rhovsat
 EoSSuperancillaries.ref_vlsat
 EoSSuperancillaries.ref_vvsat
 EoSSuperancillaries.ref_psat
