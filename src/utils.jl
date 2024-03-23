@@ -133,7 +133,6 @@ end
 
 (f::ChebyshevRange)(x) = cheb_eval(f,x)
 
-
 #supposes univariate
 #=
 function cheb_eval_inv(cheb::ChebyshevRange,fx::T) where T

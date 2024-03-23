@@ -1,7 +1,7 @@
 name = "EoSSuperancillaries"
 uuid = "c1bf003f-4e47-49d9-bdfd-5a4051db3c04"
 authors = ["Pierre Walker <pjwalker@caltech.edu>", "Andrés Riedemann <andres.riedemann@gmail.com>"]
-version = "1.2.3"
+version = "1.3"
 
 [deps]
 BSON = "fbb218c0-5317-5bc6-957e-2ee96dd4b1f0"
@@ -15,7 +15,8 @@ StaticArrays = "1"
 julia = "1.6"
 
 [extras]
+DelimitedFiles = "8bb1440f-4735-579b-a4ab-409b98df4dab"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["Test"]
+test = ["DelimitedFiles", "Test"]

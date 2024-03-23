@@ -19,7 +19,6 @@ Pages = ["pcsaft.md"]
 EoSSuperancillaries.pcsaft_tc
 EoSSuperancillaries.pcsaft_rhoc
 EoSSuperancillaries.pcsaft_vc
-
 ```
 
 ## PC-SAFT saturation volumes
@@ -32,4 +31,10 @@ EoSSuperancillaries.pcsaft_theta
 EoSSuperancillaries.pcsaft_rhosat_reduced
 EoSSuperancillaries.pcsaft_rholsat_reduced
 EoSSuperancillaries.pcsaft_rhovsat_reduced
+```
+
+## PC-SAFT acentric factor
+```@docs
+EoSSuperancillaries.pcsaft_acentric
+EoSSuperancillaries.pcsaft_m_from_acentric
 ```

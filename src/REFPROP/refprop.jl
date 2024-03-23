@@ -60,6 +60,43 @@ function ref_psat(anc::REFPROPSuperAnc, T)
 end
 
 """
+    ρl = ref_rholsat(fluid::REFPROPSuperanc, T)
+
+Returns the saturation liquid density for the reference fluid `fluid` at temperature `T`.
+
+Inputs:
+- `fluid`: Reference fluid (an instance of `REFPROPSuperAnc`)
+- `T`: Temperature (Kelvin)
+
+Outputs:
+- `ρl` : Saturation Liquid Density `[mol/m^3]`.  Returns `NaN` if the value is outside the range of the ancillary.
+"""
+function ref_rholsat(anc::REFPROPSuperAnc, T)
+    Tc = anc.Tc
+    Θ = (Tc - T)/T
+    return cheb_eval(anc.vlsat,T)
+end
+
+"""
+    ρv = ref_rhovsat(fluid::REFPROPSuperanc, T)
+
+Returns the saturation vapour density for the reference fluid `fluid` at temperature `T`.
+
+Inputs:
+- `fluid`: Reference fluid (an instance of `REFPROPSuperAnc`)
+- `T`: Temperature (Kelvin)
+
+Outputs:
+- `ρv` : Saturation Vapour Density `[mol/m^3]`.  Returns `NaN` if the value is outside the range of the ancillary.
+"""
+function ref_rhovsat(anc::REFPROPSuperAnc, T)
+    Tc = anc.Tc
+    Θ = (Tc - T)/T
+    return cheb_eval(anc.vvsat,T)
+end
+
+
+"""
     vl = ref_vlsat(fluid::REFPROPSuperanc, T)
 
 Returns the saturation liquid volume for the reference fluid `fluid` at temperature `T`.
@@ -72,9 +109,7 @@ Outputs:
 - `vl` : Saturation Liquid Volume `[m^3]`.  Returns `NaN` if the value is outside the range of the ancillary.
 """
 function ref_vlsat(anc::REFPROPSuperAnc, T)
-    Tc = anc.Tc
-    Θ = (Tc - T)/T
-    return cheb_eval(anc.vlsat,T)
+    return 1/ref_rholsat(anc,T)
 end
 
 """
@@ -90,11 +125,5 @@ Outputs:
 - `vv` : Saturation Vapour Volume `[m^3]`.  Returns `NaN` if the value is outside the range of the ancillary.
 """
 function ref_vvsat(anc::REFPROPSuperAnc, T)
-    Tc = anc.Tc
-    Θ = (Tc - T)/T
-    return cheb_eval(anc.vvsat,T)
+    return 1/ref_rhovsat(anc,T)
 end
-
-
-
-export refprop_superanc

@@ -2,6 +2,7 @@ using EoSSuperancillaries
 using Test
 const ES = EoSSuperancillaries
 using EoSSuperancillaries: cheb_eval
+using DelimitedFiles
 
 @testset "cubic" begin
     T̃ = 0.125
@@ -33,7 +34,7 @@ end
 64 2.952615079922 0.00927005575174636 3.25402208337432e-11
 
 =#
-@testset "PCSAFT" begin
+@testset "PCSAFT - Tc/Vc/Vsat" begin
     m1,m64 = 1,64
     T̃c1 = ES.pcsaft_tc(m1,1.0)
     T̃c64 = ES.pcsaft_tc(m64,1.0)
@@ -55,4 +56,26 @@ end
     @test rhol_m64_07 ≈ 0.00927005575174636
     @test rhov_m64_07 ≈ 3.25402208337432e-11
     @test pcsaft_vc(1.0,3.7039e-10) ≈ 0.00010836057852600164
+end
+
+@testset "PCSAFT - acentric" begin
+    for m in 1.0:0.01:64.0
+        @test pcsaft_m_from_acentric(pcsaft_acentric(m)) ≈ m
+    end
+end
+
+@testset "REFPROP" begin
+    table,_ = readdlm("refprop_test.csv",',',header = true)
+    names = table[:,1]
+    T = table[:,2]
+    ρl = table[:,3]
+    ρv = table[:,4]
+    p = table[:,5]
+    for i in 1:length(names)
+        anc = refprop_superanc(names[i])
+        Tᵢ = T[i]
+        @test ref_psat(anc,Tᵢ) ≈ p[i]
+        @test ref_rholsat(anc,Tᵢ) ≈ ρl[i]
+        @test ref_rhovsat(anc,Tᵢ) ≈ ρv[i]
+    end
 end
