@@ -1,18 +1,4 @@
-
-function dct_mat(::Val{N}) where N
-    L = @MMatrix zeros(N+1,N+1)
-    for j = 0:N
-        for k = j:N
-            p_j = (j == 0 || j == N) ? 2 : 1
-            p_k = (k == 0 || k == N) ? 2 : 1
-            L[j+1, k+1] = 2.0 / (p_j * p_k * N) * cos((j * pi * k) / N)
-            L[k+1, j+1] = L[j+1, k+1]
-        end
-    end
-    return L
-end
-
-const Lmat = dct_mat(Val{16}())
+const Lmat16 = dct_mat(Val{16}())
 
 """
     Tc = pcsaft_tc(m,ϵ)
@@ -39,6 +25,47 @@ function pcsaft_tc(m,ϵ)
     m⁻¹ = 1/m*oneunit(ϵ)*1.0
     T̃c = cheb_eval(PCSAFTsuperanc.Tc,m⁻¹)
     return T̃c*ϵ
+end
+
+"""
+    ω = pcsaft_acentric(m)
+
+Returns the acentric factor of the PCSAFT equation of state.
+
+Inputs:
+- `m`: Segment length (no units)
+
+Outputs:
+- `ω` : acentric factor (no units).  Returns `NaN` if the value is outside the range of the ancillary (1 ≤ m ≤ 64).
+
+## Examples
+```julia-repl
+julia> m = 1.0
+(1.0, 150.03)
+
+julia> Tc = pcsaft_acentric(m)
+191.40058128833536
+```
+"""
+function pcsaft_acentric(m)
+    m⁻¹ = 1/m
+    return cheb_eval(PCSAFTsuperanc.acentric,m⁻¹)
+end
+
+"""
+    m = pcsaft_m_from_acentric(w)
+
+Given the acentric factor of a component, returns the segment length that corresponds to the real acentric factor calculated by the PCSAFT equation of state.
+
+Inputs:
+- `ω` : acentric factor (no units)
+
+
+Outputs:
+- `m`: Segment length (no units).  Returns `NaN` if the value is outside the range of the ancillary (0.005073686089814064 ≤ w ≤ 6.0465684112508296).
+"""
+function pcsaft_m_from_acentric(ω)
+    return cheb_eval(PCSAFTsuperanc.m_from_acentric, ω)
 end
 
 """
@@ -303,8 +330,8 @@ function _pcsaft_rhosat(Θ,m⁻¹)
     edges,liq,vap = sat_data
     ρ̃l_points = svec17(liq,Θ)
     ρ̃v_points = svec17(vap,Θ)
-    cheb_nodes_ρ̃l = Lmat*ρ̃l_points
-    cheb_nodes_ρ̃v = Lmat*ρ̃v_points
+    cheb_nodes_ρ̃l = Lmat16*ρ̃l_points
+    cheb_nodes_ρ̃v = Lmat16*ρ̃v_points
     b,a = first(edges),last(edges)
     w = (2*m⁻¹ - (b + a))/(b - a)
     ρ̃l = cheb_eval(cheb_nodes_ρ̃l,w)
@@ -321,7 +348,7 @@ function _pcsaft_rholsat(Θ,m⁻¹)
     sat_data = WIntervals[w_idx]
     edges,liq,_ = sat_data
     ρ̃l_points = svec17(liq,Θ)
-    cheb_nodes_ρ̃l = Lmat*ρ̃l_points
+    cheb_nodes_ρ̃l = Lmat16*ρ̃l_points
     b,a = first(edges),last(edges)
     w = (2*m⁻¹ - (b + a))/(b - a)
     ρ̃l = cheb_eval(cheb_nodes_ρ̃l,w)
@@ -337,7 +364,7 @@ function _pcsaft_rhovsat(Θ,m⁻¹)
     sat_data = WIntervals[w_idx]
     edges,_,vap = sat_data
     ρ̃v_points = svec17(vap,Θ)
-    cheb_nodes_ρ̃v = Lmat*ρ̃l_points
+    cheb_nodes_ρ̃v = Lmat16*ρ̃l_points
     b,a = first(edges),last(edges)
     w = (2*m⁻¹ - (b + a))/(b - a)
     ρ̃v = cheb_eval(cheb_nodes_ρ̃v,w)
