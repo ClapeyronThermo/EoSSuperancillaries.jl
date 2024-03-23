@@ -13,7 +13,7 @@ makedocs(sitename = "EoSSuperancillaries.jl",
             "Peng-Robinson" => "pr.md",
             "PC-SAFT" => "pcsaft.md"
             "REFPROP" => [
-                "REFPROP superancillaries" => "refprop.md"
+                "REFPROP superancillaries" => "refprop.md",
                 "list of fluids" => "refprop_fluids.md"]
             ]]
     )
