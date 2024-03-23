@@ -126,10 +126,11 @@ function merge_chebs!(left::ChebyshevRangeVec{T},right::ChebyshevRangeVec{T}) wh
     return left
 end
 
+#=
 function Base.convert(::Type{T},f::ChebyshevRange) where {T}
     coeffs = [T.(coef) for coef in f.coeffs]
     return ChebyshevRange(T.(f.range),coeffs)
-end
+end =#
 
 (f::ChebyshevRange)(x) = cheb_eval(f,x)
 
