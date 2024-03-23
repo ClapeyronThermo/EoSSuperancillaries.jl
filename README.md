@@ -19,6 +19,7 @@ It can calculate the following properties:
 - van der Wals: saturated densities, saturated pressures.
 - Redlich-Kwong: saturated densities, saturated pressures.
 - Peng-Robinson: saturated densities, saturated pressures.
+- REFPROP reference equations: saturated densities, saturated pressures.
 
 ## Usage
 
@@ -47,6 +48,10 @@ m = saft.params.segment[1]
 ϵ = saft.params.epsilon[1]
 Tc = pcsaft_tc(m,ϵ) #150 ns
 Tc2 = Clapeyron.crit_pure(saft) #around 100 μs
+
+#usage for REFPROP reference fluids
+water = refprop_superanc("water")
+psat = ref_psat(water,373.15)
 ```
 
 ## Notes
@@ -59,3 +64,4 @@ Superancillaries have problems on really low reduced temperatures, but those pro
 ## References
 1. Bell, I. H., & Deiters, U. K. (2021). Superancillary equations for cubic equations of state. Industrial & Engineering Chemistry Research, 60(27), 9983–9991. [doi:10.1021/acs.iecr.1c00847](https://doi.org/10.1021/acs.iecr.1c00847)
 2. Bell, I. H., & Deiters, U. K. (2023). Superancillary equations for nonpolar pure fluids modeled with the PC-SAFT equation of state. Industrial & Engineering Chemistry Research. [doi:10.1021/acs.iecr.2c02916](https://doi.org/10.1021/acs.iecr.2c02916)
+3. Bell, I. H. (2024). Superancillary equations for the multiparameter equations of state in REFPROP 10.0. Journal of Physical and Chemical Reference Data, 53(1). [doi:10.1063/5.0191228](https://doi.org/10.1063/5.0191228)
